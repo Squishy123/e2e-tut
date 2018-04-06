@@ -6,7 +6,7 @@ describe('First Test', () => {
 
     before(async () => {
         browser = await puppeteer.launch({
-            headless: false
+            headless: true
         })
         page = await browser.newPage()
     })
@@ -24,10 +24,26 @@ describe('First Test', () => {
         await browser.close()
     })
 
+    //first test
     it('input field should exist on the page', async () => {
         const expectedInput = "Enter a task"
         const text = await page.evaluate(() => {
             return document.querySelector('#taskin').placeholder})
         expect(text).to.equal(expectedInput)
     })
+
+    it('should add item to the list', async() => {
+        const expectedInput = "Learn async/await contruction"
+        await page.type('#taskin', expectedInput)
+        await page.click('#task')
+        await page.waitForSelector('#todo > li')
+        const createdTask = await page.evaluate(() => {
+            return document.querySelector('#todo > li').textContent
+        })
+        expect(createdTask).to.include(expectedInput)
+
+        await page.screenshot({path: 'test/screens/test.png'});
+    })
+
+
 })
